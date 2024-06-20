@@ -4,10 +4,7 @@ import React, {useEffect} from "react";
 import {getAllCitiesAction, getCityByIdAction} from "../../../store";
 //@ts-ignore
 import classes from '../../../styles/forms/form.module.css'
-import Select from "react-select";
-import {store} from "../../../store/store";
 import {CustomOption} from "../../selects/custom.option";
-import {CityUpdateInterface} from "../../../interfaces";
 
 export function CityForCreationList() {
     const dispatch: any = useDispatch();

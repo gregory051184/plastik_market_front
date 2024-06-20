@@ -1,16 +1,13 @@
 import {useDispatch} from "react-redux";
 import {useTypedSelector} from "../../../hooks/useTyped.selector";
-import React, {useEffect} from "react";
-import {CustomCheckbox} from "../../inputs/custom.checkbox";
+import React from "react";
 import {
-    getAllSubCategoriesAction, getCityByIdAction,
     getSubCategoryByIdAction
 } from "../../../store";
-import {store} from "../../../store/store";
 import {CustomOption} from "../../selects/custom.option";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
-import Select from "react-select";
+
 
 interface SubCat {
     subCategories: any[]
