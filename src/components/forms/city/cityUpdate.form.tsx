@@ -10,6 +10,8 @@ import {Message} from "../../messages/message";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
 
+//@ts-ignore
+const tg: any = window.Telegram.WebApp;
 
 export function CityUpdateForm() {
     const params: any = useParams();
@@ -32,12 +34,14 @@ export function CityUpdateForm() {
 
     const clickHandler = () => {
         dispatch(cityUpdateAction({
-            id: +city.id,
-            title: title
-        })).then(() => {
-            if (store.getState().items.item.title) {
+                id: +city.id,
+                title: title
+            },
+            params.chatId)).then(() => {
+            if (store.getState().cities.city.title) {
                 setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.close()
             } else {
                 setShowSuccessMessage(false);
                 setShowWarningMessage(true);
@@ -47,6 +51,7 @@ export function CityUpdateForm() {
 
     useEffect(() => {
         dispatch(getCityByIdAction(+params.id));
+
     }, []);
 
     return (
@@ -58,7 +63,7 @@ export function CityUpdateForm() {
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
-                    placeholder={'Название города'}
+                    placeholder={'Новое название города'}
                     name={'title'}
                     changeHandler={changeHandler}
                     value={title}></CustomInput>

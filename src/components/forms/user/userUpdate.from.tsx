@@ -66,6 +66,7 @@ export function UserUpdateFrom() {
             if (store.getState().users.user.id) {
                 setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.close()
             } else {
                 setShowSuccessMessage(false);
                 setShowWarningMessage(true);

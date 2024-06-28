@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getSubscribeByIdHandler = async (subscribeId: number) => {
     try {
-        const subscribe = await axios.get(`https://raw-market.ru/api/subscribes/${subscribeId}`);
+        const subscribe = await axios.get(`http://127.0.0.1:5001/api/subscribes/${subscribeId}`);
         if (subscribe.data && subscribe.status === 200) {
             return subscribe.data;
         }

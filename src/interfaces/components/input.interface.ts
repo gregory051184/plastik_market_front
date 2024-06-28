@@ -9,6 +9,6 @@ export interface InputInterface {
         checked?: boolean,
         text?: string,
         changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void,
-        styles?: any
-        accept?: string
+        styles?: any,
+        accept?: string,
 }

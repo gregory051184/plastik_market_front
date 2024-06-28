@@ -15,10 +15,18 @@ import {
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
 import {CustomOption} from "../../selects/custom.option";
+import {useParams} from "react-router-dom";
+import {getUserByChatIdAction} from "../../../store/actionCreators/user/getUserByChatId.action";
+
+//@ts-ignore
+const tg: any = window.Telegram.WebApp;
 
 export function SubCategoryCreateForm() {
 
+    const params: any = useParams();
     const dispatch: any = useDispatch();
+
+    const {user} = useTypedSelector(state => state.users);
     const {subCategory} = useTypedSelector(state => state.subCategories);
     const {category, categories} = useTypedSelector(state => state.categories);
     const [title, setTitle] = useState("");
@@ -41,10 +49,12 @@ export function SubCategoryCreateForm() {
         dispatch(subCategoryCreateAction({
             title: title,
             categoryId: category.id,
+            userId: user.id,
         })).then(() => {
             if (store.getState().categories.category.title) {
                 setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.close()
             } else {
                 setShowSuccessMessage(false);
                 setShowWarningMessage(true);
@@ -58,6 +68,7 @@ export function SubCategoryCreateForm() {
 
     useEffect(() => {
         dispatch(getAllCategoriesAction());
+        dispatch(getUserByChatIdAction(params.chatId.toString()));
 
     }, []);
 

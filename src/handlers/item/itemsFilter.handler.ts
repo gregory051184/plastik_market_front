@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const itemsFilterHandler = async (filter: ItemsFilterInterface) => {
     try {
-        const items = await axios.get('https://raw-market.ru/api/items/filters', {
+        const items = await axios.get('http://127.0.0.1:5001/api/items/filters', {
             params: {filter}
         })
         if (items) {

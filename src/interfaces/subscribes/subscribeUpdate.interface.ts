@@ -3,5 +3,7 @@ export interface SubscribeUpdateInterface {
     title?: string;
     price?: number;
     description?: string;
+    itemsNumber?: number;
     months?: number;
+
 }

@@ -7,8 +7,8 @@ export const getSubscribeByIdAction = (subscribeId: number) => {
     return async (dispatch: Dispatch<SubscribeActionTypesInterfaces>) => {
         try {
             const subscribe = await getSubscribeByIdHandler(subscribeId);
-            if (subscribe?.data && subscribe.status === 200) {
-                dispatch({type: SubscribeActionTypes.GET_SUBSCRIBE_BY_ID, subscribe: subscribe.data});
+            if (subscribe) {
+                dispatch({type: SubscribeActionTypes.GET_SUBSCRIBE_BY_ID, subscribe: subscribe});
             }
         } catch (error) {
 

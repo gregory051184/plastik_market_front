@@ -4,10 +4,10 @@ import {AdvertisementsActionTypesInterfaces} from "../../../interfaces/reduxInte
 import {advertisementUpdateHandler} from "../../../handlers";
 import {AdvertisementActionTypes} from "../../actionsTypes";
 
-export const advertisementUpdateAction = (advertisementUpdateInterface: AdvertisementUpdateInterface) => {
+export const advertisementUpdateAction = (advertisementUpdateInterface: AdvertisementUpdateInterface, chatId: string) => {
     return async (dispatch: Dispatch<AdvertisementsActionTypesInterfaces>) => {
         try {
-            const advertisement = await advertisementUpdateHandler(advertisementUpdateInterface);
+            const advertisement = await advertisementUpdateHandler(advertisementUpdateInterface, chatId);
             if (advertisement) {
                 dispatch({type: AdvertisementActionTypes.UPDATE_ADVERTISEMENT, payload: advertisementUpdateInterface});
             }

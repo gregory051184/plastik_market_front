@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {useDispatch} from "react-redux";
 import {useState} from "react";
 import {subscribeCreateAction} from "../../../store";
@@ -9,14 +9,23 @@ import {AcceptButton} from "../../buttons/access.button";
 import {CustomInput} from "../../inputs/custom.input";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
+import {useParams} from "react-router-dom";
+import {getUserByChatIdAction} from "../../../store/actionCreators/user/getUserByChatId.action";
+
+//@ts-ignore
+const tg: any = window.Telegram.WebApp;
 
 export function SubscribeCreateForm() {
 
     const dispatch: any = useDispatch();
+
+    const params: any = useParams();
+    const {user} = useTypedSelector(state => state.users);
     const {subscribe} = useTypedSelector(state => state.subscribes);
     const [title, setTitle] = useState("");
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState("");
+    const [itemsNumber, setItemsNumber] = useState('');
     const [months, setMonths] = useState('');
 
 
@@ -36,6 +45,9 @@ export function SubscribeCreateForm() {
         if (event.target.name === 'months') {
             setMonths(event.target.value)
         }
+        if (event.target.name === 'itemsNumber') {
+            setItemsNumber(event.target.value)
+        }
     }
 
     const clickHandler = async () => {
@@ -43,11 +55,14 @@ export function SubscribeCreateForm() {
             title: title,
             price: +price,
             description: description,
-            months: +months
+            months: +months,
+            itemsNumber: +itemsNumber,
+            userId: +user.id
         })).then(() => {
             if (store.getState().subscribes.subscribe.title) {
                 setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.close()
             } else {
                 setShowSuccessMessage(false);
                 setShowWarningMessage(true);
@@ -58,6 +73,10 @@ export function SubscribeCreateForm() {
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault();
     }
+
+    useEffect(() => {
+        dispatch(getUserByChatIdAction(params.chatId.toString()));
+    }, [])
 
     return (
         <>
@@ -92,6 +111,13 @@ export function SubscribeCreateForm() {
                     placeholder={'Месяцев'}
                     name={'months'}
                     value={months}
+                    changeHandler={changeHandler}></CustomInput>
+                <CustomInput
+                    styles={classes.input}
+                    type={'text'}
+                    placeholder={'Кол-во дней'}
+                    name={'itemsNumber'}
+                    value={itemsNumber}
                     changeHandler={changeHandler}></CustomInput>
                 <AcceptButton
                     styles={classes.submit}

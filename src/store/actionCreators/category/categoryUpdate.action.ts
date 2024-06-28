@@ -4,10 +4,10 @@ import {CategoryActionTypesInterfaces} from "../../../interfaces/reduxInterfaces
 import {categoryUpdateHandler} from "../../../handlers";
 import {CategoryActionTypes} from "../../actionsTypes";
 
-export const categoryUpdateAction = (categoryUpdateInterface: CategoryUpdateInterface) => {
+export const categoryUpdateAction = (categoryUpdateInterface: CategoryUpdateInterface, chatId: string) => {
     return async (dispatch: Dispatch<CategoryActionTypesInterfaces>) => {
         try {
-            const category = await categoryUpdateHandler(categoryUpdateInterface);
+            const category = await categoryUpdateHandler(categoryUpdateInterface, chatId);
             if (category) {
                 dispatch({type: CategoryActionTypes.UPDATE_CATEGORY, payload: categoryUpdateInterface});
             }

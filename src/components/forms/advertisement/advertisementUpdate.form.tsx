@@ -7,12 +7,19 @@ import {advertisementUpdateAction, getAdvertisementByIdAction} from "../../../st
 import {useParams} from "react-router-dom";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
+import {store} from "../../../store/store";
+import {Message} from "../../messages/message";
 
+//@ts-ignore
+const tg: any = window.Telegram.WebApp;
 
 export function AdvertisementUpdateForm() {
     const params: any = useParams();
     const dispatch: any = useDispatch();
     const {advertisement} = useTypedSelector(state => state.advertisements);
+
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [showWarningMessage, setShowWarningMessage] = useState(false);
 
     const [title, setTitle] = useState(advertisement.title);
     const [price, setPrice] = useState(advertisement.price);
@@ -42,7 +49,18 @@ export function AdvertisementUpdateForm() {
             title: title,
             price: price,
             description: description
-        }))
+        },
+            params.chatId
+            )).then(() => {
+            if (store.getState().categories.category.title) {
+                setShowSuccessMessage(true);
+                setShowWarningMessage(false);
+                tg.close()
+            } else {
+                setShowSuccessMessage(false);
+                setShowWarningMessage(true);
+            }
+        })
     }
 
     useEffect(() => {
@@ -51,6 +69,8 @@ export function AdvertisementUpdateForm() {
 
     return (
         <>
+            {showSuccessMessage ? <Message text={`Рекламный блок ${advertisement.title} изменён`}></Message> : null}
+            {showWarningMessage ? <Message text={`Неверно введены данные`}></Message> : null}
             <form onSubmit={submitHandler} className={classes.form}>
                 <h1 className={classes.subtitle}>Форма изменения рекламных блоков</h1>
                 <CustomInput

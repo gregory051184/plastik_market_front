@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getSubCategoryByIdHandler = async (subCategoryId: number) => {
     try {
-        const subCategory = await axios.get(`https://raw-market.ru/api/subcategories/${subCategoryId}`)
+        const subCategory = await axios.get(`http://127.0.0.1:5001/api/subcategories/${subCategoryId}`)
         if (subCategory?.data && subCategory.status === 200) {
             return subCategory.data
         }

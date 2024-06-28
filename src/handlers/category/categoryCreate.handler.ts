@@ -2,16 +2,17 @@ import {CategoryCreateInterface} from "../../interfaces";
 import axios from "axios";
 
 export const categoryCreateHandler = async (categoryDto: CategoryCreateInterface) => {
-    try{
-        const category = await axios.post('https://raw-market.ru/api/categories',
+    try {
+        const category = await axios.post(`http://127.0.0.1:5001/api/categories`,
             {...categoryDto,},
             {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
-        if(category) {
+        if (category) {
             return category.data
         }
-    }catch (error) {}
+    } catch (error) {
+    }
 }

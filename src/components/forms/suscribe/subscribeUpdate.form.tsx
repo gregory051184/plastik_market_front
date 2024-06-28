@@ -7,7 +7,11 @@ import {getSubscribeByIdAction, subscribeUpdateAction} from "../../../store";
 import {useParams} from "react-router-dom";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
+import {store} from "../../../store/store";
+import {Message} from "../../messages/message";
 
+//@ts-ignore
+const tg: any = window.Telegram.WebApp;
 
 export function SubscribeUpdateForm() {
     const params: any = useParams();
@@ -18,6 +22,10 @@ export function SubscribeUpdateForm() {
     const [price, setPrice] = useState(subscribe.price);
     const [description, setDescription] = useState(subscribe.description);
     const [months, setMonths] = useState(subscribe.months);
+    const [itemsNumber, setItemsNumber] = useState(subscribe.itemsNumber);
+
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [showWarningMessage, setShowWarningMessage] = useState(false);
 
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault()
@@ -36,16 +44,30 @@ export function SubscribeUpdateForm() {
         if (event.target.name === 'months') {
             setMonths(+event.target.value)
         }
+        if (event.target.name === 'itemsNumber') {
+            setItemsNumber(+event.target.value)
+        }
     }
 
     const clickHandler = () => {
         dispatch(subscribeUpdateAction({
-            id: subscribe.id,
-            title: subscribe.title,
-            price: subscribe.price,
-            description: subscribe.description,
-            months: subscribe.months
-        }))
+                id: +subscribe.id,
+                title: title,
+                price: +price,
+                description: description,
+                months: +months,
+                itemsNumber: +itemsNumber
+            },
+            params.chatId)).then(() => {
+            if (store.getState().subscribes.subscribe.title) {
+                setShowSuccessMessage(true);
+                setShowWarningMessage(false);
+                tg.close()
+            } else {
+                setShowSuccessMessage(false);
+                setShowWarningMessage(true);
+            }
+        })
     }
 
     useEffect(() => {
@@ -54,6 +76,8 @@ export function SubscribeUpdateForm() {
 
     return (
         <>
+            {showSuccessMessage ? <Message text={`Подписка ${subscribe.title} изменена`}></Message> : null}
+            {showWarningMessage ? <Message text={`Неверно введены данные`}></Message> : null}
             <form onSubmit={submitHandler} className={classes.form}>
                 <h1 className={classes.subtitle}>Форма изменения города</h1>
                 <CustomInput
@@ -83,6 +107,13 @@ export function SubscribeUpdateForm() {
                     placeholder={'Цена'}
                     name={'months'}
                     value={months.toString()}
+                    changeHandler={changeHandler}></CustomInput>
+                <CustomInput
+                    styles={classes.input}
+                    type={'text'}
+                    placeholder={'Кол-во дней'}
+                    name={'itemsNumber'}
+                    value={itemsNumber.toString()}
                     changeHandler={changeHandler}></CustomInput>
                 <AcceptButton
                     styles={classes.submit}

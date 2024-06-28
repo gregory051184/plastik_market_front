@@ -1,9 +1,9 @@
 import {CategoryUpdateInterface} from "../../interfaces";
 import axios from "axios";
 
-export const categoryUpdateHandler = async (categoryUpdateInterface: CategoryUpdateInterface) => {
+export const categoryUpdateHandler = async (categoryUpdateInterface: CategoryUpdateInterface, chatId: string) => {
     try{
-        const category = await axios.patch('https://raw-market.ru/api/categories',
+        const category = await axios.patch(`http://127.0.0.1:5001/api/categories/${chatId}`,
             {...categoryUpdateInterface},
             {
                 headers: {

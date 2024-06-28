@@ -7,6 +7,7 @@ export const subscribeState: SubscribeStateInterface = {
         price: 0,
         description: '',
         months: 0,
+        itemsNumber: 0,
         createdAt: {},
         updatedAt: {}
     },

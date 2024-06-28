@@ -6,7 +6,7 @@ export const itemUpdateHandler = async (itemUpdateDto: ItemUpdateInterface) => {
     try {
         const fileForm = new FormData();
         fileForm.append('file', itemUpdateDto.file)
-        const item = await axios.patch('https://raw-market.ru/api/items',
+        const item = await axios.patch('http://127.0.0.1:5001/api/items',
             {...itemUpdateDto},
             {
                 headers: {

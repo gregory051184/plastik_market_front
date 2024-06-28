@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {useDispatch} from "react-redux";
 import {useState} from "react";
 import {advertisementCreateAction} from "../../../store";
@@ -9,11 +9,19 @@ import {AcceptButton} from "../../buttons/access.button";
 import {CustomInput} from "../../inputs/custom.input";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
+import {useParams} from "react-router-dom";
+import {getUserByChatIdAction} from "../../../store/actionCreators/user/getUserByChatId.action";
+
+//@ts-ignore
+const tg: any = window.Telegram.WebApp;
 
 export function AdvertisementCreateForm() {
 
+    const params: any = useParams();
     const dispatch: any = useDispatch();
     const {advertisement} = useTypedSelector(state => state.advertisements);
+    const {user} = useTypedSelector(state => state.users);
+
     const [title, setTitle] = useState("");
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState("");
@@ -41,11 +49,13 @@ export function AdvertisementCreateForm() {
         dispatch(advertisementCreateAction({
             title: title,
             price: price,
-            description: description
+            description: description,
+            userId: +user.id,
         })).then(() => {
             if (store.getState().advertisements.advertisement.title) {
                 setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.close()
             } else {
                 setShowSuccessMessage(false);
                 setShowWarningMessage(true);
@@ -56,6 +66,10 @@ export function AdvertisementCreateForm() {
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault();
     }
+
+    useEffect(() => {
+        dispatch(getUserByChatIdAction(params.chatId));
+    }, []);
     return (
         <>
             {showSuccessMessage ? <Message text={`Рекламный блок ${advertisement.title} создан`}></Message> : null}

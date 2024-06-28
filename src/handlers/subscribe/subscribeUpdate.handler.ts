@@ -1,9 +1,9 @@
 import {SubscribeUpdateInterface} from "../../interfaces";
 import axios from "axios";
 
-export const subscribeUpdateHandler = async (subscribeUpdateInterface: SubscribeUpdateInterface) => {
+export const subscribeUpdateHandler = async (subscribeUpdateInterface: SubscribeUpdateInterface, chatId: string) => {
     try{
-        const subscribe = await axios.patch('https://raw-market.ru/api/items',
+        const subscribe = await axios.patch(`http://127.0.0.1:5001/api/subscribes/${chatId}`,
             {...subscribeUpdateInterface},
             {
                 headers: {

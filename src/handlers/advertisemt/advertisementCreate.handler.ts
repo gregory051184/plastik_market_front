@@ -2,8 +2,9 @@ import {AdvertisementCreateInterface} from "../../interfaces";
 import axios from "axios";
 
 export const advertisementCreateHandler = async (advertisementCreateInterface: AdvertisementCreateInterface) => {
+    console.log(advertisementCreateInterface)
     try{
-        const advertisement = await axios.post('https://raw-market.ru/api/advertisementes',
+        const advertisement = await axios.post('http://127.0.0.1:5001/api/advertisements',
             {...advertisementCreateInterface},
             {
                 headers: {

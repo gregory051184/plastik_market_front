@@ -24,28 +24,28 @@ function App() {
             <Routes>
                 <Route path={AllUrls.USER_UPDATE_FORM + '/:id'} element={<UserUpdateFrom></UserUpdateFrom>}></Route>
 
-                <Route path={AllUrls.ADVERTISEMENT_CREATE_FORM}
+                <Route path={AllUrls.ADVERTISEMENT_CREATE_FORM + '/:chatId'}
                        element={<AdvertisementCreateForm></AdvertisementCreateForm>}></Route>
-                <Route path={AllUrls.ADVERTISEMENT_UPDATE_FORM + '/:id'}
+                <Route path={AllUrls.ADVERTISEMENT_UPDATE_FORM + '/:id' + '/:chatId'}
                        element={<AdvertisementUpdateForm></AdvertisementUpdateForm>}></Route>
 
-                <Route path={AllUrls.CITY_CREATE_FORM} element={<CityCreateForm></CityCreateForm>}></Route>
-                <Route path={AllUrls.CITY_UPDATE_FORM + '/:id'} element={<CityUpdateForm></CityUpdateForm>}></Route>
+                <Route path={AllUrls.CITY_CREATE_FORM + '/:chatId'} element={<CityCreateForm></CityCreateForm>}></Route>
+                <Route path={AllUrls.CITY_UPDATE_FORM + '/:id' + '/:chatId'} element={<CityUpdateForm></CityUpdateForm>}></Route>
 
-                <Route path={AllUrls.CATEGORY_CREATE_FORM} element={<CategoryCreateForm></CategoryCreateForm>}></Route>
-                <Route path={AllUrls.CATEGORY_UPDATE_FORM + '/:id'}
+                <Route path={AllUrls.CATEGORY_CREATE_FORM + '/:chatId'} element={<CategoryCreateForm></CategoryCreateForm>}></Route>
+                <Route path={AllUrls.CATEGORY_UPDATE_FORM + '/:id' + '/:chatId'}
                        element={<CategoryUpdateForm></CategoryUpdateForm>}></Route>
 
 
-                <Route path={AllUrls.SUBCATEGORY_CREATE_FORM}
+                <Route path={AllUrls.SUBCATEGORY_CREATE_FORM + '/:chatId'}
                        element={<SubCategoryCreateForm></SubCategoryCreateForm>}></Route>
-                <Route path={AllUrls.SUBCATEGORY_UPDATE_FORM + '/:id'}
+                <Route path={AllUrls.SUBCATEGORY_UPDATE_FORM + '/:id' + '/:chatId'}
                        element={<SubCategoryUpdateForm></SubCategoryUpdateForm>}></Route>
 
 
-                <Route path={AllUrls.SUBSCRIBE_CREATE_FORM}
+                <Route path={AllUrls.SUBSCRIBE_CREATE_FORM + '/:chatId'}
                        element={<SubscribeCreateForm></SubscribeCreateForm>}></Route>
-                <Route path={AllUrls.SUBSCRIBE_UPDATE_FORM + '/:id'}
+                <Route path={AllUrls.SUBSCRIBE_UPDATE_FORM + '/:id' + '/:chatId'}
                        element={<SubscribeUpdateForm></SubscribeUpdateForm>}></Route>
 
                 <Route path={AllUrls.FILTER_ITEMS} element={<ItemsFilter></ItemsFilter>}></Route>

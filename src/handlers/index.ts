@@ -34,3 +34,4 @@ export * from './subscribe/subscribeCreate.handler';
 export * from './subscribe/subscribeUpdate.handler';
 export * from './subscribe/getSubscribeById.handler';
 
+export * from './item/checkFile.handler'

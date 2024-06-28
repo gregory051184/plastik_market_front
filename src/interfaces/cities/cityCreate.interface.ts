@@ -1,5 +1,5 @@
 export interface CityCreateInterface {
     title: string;
-    //other?: boolean;
-    //userId: any
+    other?: boolean;
+    userId: any
 }

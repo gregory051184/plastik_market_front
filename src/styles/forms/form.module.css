@@ -26,9 +26,9 @@ body {
 .subtitle {
     color: #eee;
     font-family: sans-serif;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 600;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .input-container {
@@ -143,3 +143,4 @@ body {
     color: #eee;
     margin-top: 12px;
 }
+

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {useDispatch} from "react-redux";
 import {useState} from "react";
 import {categoryCreateAction} from "../../../store";
@@ -9,11 +9,19 @@ import {AcceptButton} from "../../buttons/access.button";
 import {CustomInput} from "../../inputs/custom.input";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
+import {useParams} from "react-router-dom";
+import {getUserByChatIdAction} from "../../../store/actionCreators/user/getUserByChatId.action";
+
+//@ts-ignore
+const tg: any = window.Telegram.WebApp;
 
 export function CategoryCreateForm() {
 
+    const params: any = useParams();
     const dispatch: any = useDispatch();
     const {category} = useTypedSelector(state => state.categories);
+    const {user} = useTypedSelector(state => state.users);
+
     const [title, setTitle] = useState("");
 
 
@@ -25,10 +33,14 @@ export function CategoryCreateForm() {
     }
 
     const clickHandler = async () => {
-        dispatch(categoryCreateAction({title: title})).then(() => {
+        dispatch(categoryCreateAction({
+            title: title,
+            userId: +user.id
+        })).then(() => {
             if (store.getState().categories.category.title) {
                 setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.close()
             } else {
                 setShowSuccessMessage(false);
                 setShowWarningMessage(true);
@@ -39,6 +51,10 @@ export function CategoryCreateForm() {
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault();
     }
+
+    useEffect(() => {
+        dispatch(getUserByChatIdAction(params.chatId.toString()));
+    }, []);
 
     return (
         <>

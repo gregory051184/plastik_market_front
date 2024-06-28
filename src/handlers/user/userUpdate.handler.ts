@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const userUpdateHandler = async (userUpdateInterface: UserUpdateInterface) => {
     try{
-        const user = await axios.patch('https://raw-market.ru/api/users',
+        const user = await axios.patch('http://127.0.0.1:5001/api/users',
             {...userUpdateInterface},
             {
                 headers: {

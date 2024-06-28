@@ -19,7 +19,6 @@ import {useParams} from "react-router-dom";
 import classes from '../../../styles/forms/form.module.css'
 import {CityForCreationList} from "../../lists/cities/cityForCreation.list";
 import {CategoryForCreationList} from "../../lists/category/categoryForCreation.list";
-import {itemTitleException} from "../../../exсeptions/itemTitle.exсeption";
 
 //@ts-ignore
 const tg: any = window.Telegram.WebApp;
@@ -29,14 +28,14 @@ export function ItemUpdateForm() {
     const params: any = useParams();
     const dispatch: any = useDispatch();
 
-    const {categories, category} = useTypedSelector(state => state.categories);
-    const {subCategories, subCategory} = useTypedSelector(state => state.subCategories);
+    //const {categories, category} = useTypedSelector(state => state.categories);
+    //const {subCategories, subCategory} = useTypedSelector(state => state.subCategories);
     const {item} = useTypedSelector(state => state.items);
-    const {cities, city} = useTypedSelector(state => state.cities);
+    //const {cities, city} = useTypedSelector(state => state.cities);
 
     const [file, setFile] = useState<File | null>(null);
     const [title, setTitle] = useState(item.title);
-    const [price, setPrice] = useState(`${item.price} ` + item.unitOfMeasurement);
+    const [price, setPrice] = useState(item.price.toString() + ' ' + item.unitOfMeasurement);
     const [description, setDescription] = useState(item.description);
     const [image, setImage] = useState(item.image);
     const [forSale, setForSale] = useState(item.forSale);
@@ -169,6 +168,7 @@ export function ItemUpdateForm() {
             if (store.getState().items.item.title) {
                 setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.close()
             } else {
                 setShowSuccessMessage(false);
                 setShowWarningMessage(true);
@@ -180,7 +180,6 @@ export function ItemUpdateForm() {
         event.preventDefault();
     }
 
-
     return (
         <>
             {showSuccessMessage ? <Message text={`Товар ${item.title} изменён`}></Message> : null}
@@ -188,62 +187,13 @@ export function ItemUpdateForm() {
 
             {titleWarningMessage ? <Message
                 text={`В название использован запрещённый символ _, $, %, #, @, &, *, ^`}></Message> : null}
-            {/*<h1>Форма изменения товара</h1>*/}
-            {/*<select onChange={selectHandler}>
-                <option>Выберите город</option>
-                {cities.map((city: any): any =>
-                    <CustomOption
-                        placeholder={city.title}
-                        value={city.id}
-                        optionText={city.title}></CustomOption>
-                )}
-            </select>*/}
-            {/*<h2>Выберите категорию</h2>*/}
-            {/*<select onChange={categoryChangeHandler}>
-                <option>Выберите категорию</option>
-                {
-                    categories.map((category: any) =>
-                        <CustomOption
-                            placeholder={category.title}
-                            value={category.id}
-                            optionText={category.title}></CustomOption>)}
-            </select>*/}
-            {/*categories.map((category: any) =>
-                <CustomCheckbox
-                    type={'checkbox'}
-                    changeHandler={categoryChangeHandler}
-                    name={`${category.id}`}
-                    checked={category.id === store.getState().categories.category.id ? !!1 : !!0}
-                    text={category.title}></CustomCheckbox>
-            )*/}
-            {/*showSubCategoriesSelect && <h2>Выберите подкатегорию</h2>*/}
-            {/*showSubCategoriesSelect && <select onChange={subCategoryChangeHandler}>
-                <option>Выберите подкатегорию</option>
-                {
-                    subCategories.map((subCategory: any) =>
-                        <CustomOption
-                            placeholder={subCategory.title}
-                            value={subCategory.id}
-                            optionText={subCategory.title}></CustomOption>)}
-            </select>*/}
-
-            {/*subCategories.map((subCategory: any) =>
-                <CustomCheckbox
-                    type={'checkbox'}
-                    changeHandler={subCategoryChangeHandler}
-                    name={`${subCategory.id}`}
-                    checked={subCategory.id === store.getState().subCategories.subCategory.id ? !!1 : !!0}
-                    //checked={!checked ? !!0 : !!1}
-                    text={subCategory.title}></CustomCheckbox>
-            )*/}
-
             <form onSubmit={submitHandler} className={classes.form}>
                 <CityForCreationList></CityForCreationList>
                 <CategoryForCreationList></CategoryForCreationList>
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
-                    placeholder={'Название товара'}
+                    placeholder={item.title}
                     name={'title'}
                     value={title}
                     changeHandler={changeHandler}></CustomInput>
@@ -266,23 +216,26 @@ export function ItemUpdateForm() {
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
-                    placeholder={'Цена в формате "2000 руб/т" или "2000 руб"'}
+                    placeholder={item.price.toString() + item.unitOfMeasurement}
                     name={'price'}
                     value={price}
                     changeHandler={changeHandler}></CustomInput>
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
-                    placeholder={'Описание'}
+                    placeholder={item.description}
                     name={'description'}
                     value={description}
                     changeHandler={changeHandler}></CustomInput>
+
+                <label className={classes.subtitle}>В поле "выбрать файл" поместите фото товара</label>
                 <CustomInput
                     styles={classes.input}
                     type={'file'}
                     name={'image'}
                     accept={'image/*,.png,.jpg,.gif,.web'}
                     changeHandler={changeHandler}></CustomInput>
+
                 <AcceptButton
                     styles={classes.submit}
                     buttonText={'Изменить'}

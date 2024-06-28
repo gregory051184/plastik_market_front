@@ -5,6 +5,7 @@ export interface SubscribeStateInterface {
         price: number;
         description: string;
         months: number;
+        itemsNumber: number;
         createdAt?: any;
         updatedAt?: any;
     },

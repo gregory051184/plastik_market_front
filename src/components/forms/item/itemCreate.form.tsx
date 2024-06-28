@@ -13,6 +13,7 @@ import {CityForCreationList} from "../../lists/cities/cityForCreation.list";
 import {useParams} from "react-router-dom";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
+import {checkFileHandler} from "../../../handlers";
 
 //@ts-ignore
 const tg: any = window.Telegram.WebApp;
@@ -39,6 +40,7 @@ export function ItemCreateForm() {
 
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [showWarningMessage, setShowWarningMessage] = useState(false);
+    const [existingFile, setExistingFile] = useState(false);
 
     const [titleWarningMessage, setTitleWarningMessage] = useState(false);
 
@@ -55,7 +57,7 @@ export function ItemCreateForm() {
         if (event.target.name === 'title') {
             if (!!event.target.value.match(/[$#*_^%&@]/g)) {
                 setTitleWarningMessage(true)
-            }else {
+            } else {
                 setTitle(event.target.value);
                 setTitleWarningMessage(false)
             }
@@ -80,32 +82,38 @@ export function ItemCreateForm() {
     }
 
     const clickHandler = async () => {
-        if(title && category && subCategory && city && price && description && (forSale || forBuying)) {
-            dispatch(itemCreateAction({
-                title: title,
-                file: file,
-                categoryId: category.id,
-                cityId: city.id,
-                owner: owner,
-                unitOfMeasurement: price.split(' ')[1],
-                sold: false,
-                forSale: forSale,
-                forBuying: forBuying,
-                subCategoryId: subCategory.id,
-                description: description,
-                price: +price.split(' ')[0],
-                image: image
-            })).then(() => {
-                if (store.getState().items.item.title) {
-                    setShowSuccessMessage(true);
-                    setShowWarningMessage(false);
-                    tg.close()
-                } else {
-                    setShowSuccessMessage(false);
-                    setShowWarningMessage(true);
-                }
-            })
-        }else {
+        if (title && category && subCategory && city && price && description && (forSale || forBuying)) {
+            if (await checkFileHandler(title, owner, image)) {
+                dispatch(itemCreateAction({
+                    title: title,
+                    file: file,
+                    categoryId: category.id,
+                    cityId: city.id,
+                    owner: owner,
+                    unitOfMeasurement: price.split(' ')[1],
+                    sold: false,
+                    forSale: forSale,
+                    forBuying: forBuying,
+                    subCategoryId: subCategory.id,
+                    description: description,
+                    price: +price.split(' ')[0],
+                    image: image
+                })).then(() => {
+                    if (store.getState().items.item.title) {
+                        setShowSuccessMessage(true);
+                        setShowWarningMessage(false);
+                        setExistingFile(false);
+                        tg.close()
+                    } else {
+                        setShowSuccessMessage(false);
+                        setShowWarningMessage(true);
+                        setExistingFile(false);
+                    }
+                })
+            } else {
+                setExistingFile(true)
+            }
+        } else {
             setShowWarningMessage(true);
             setShowSuccessMessage(false);
         }
@@ -124,6 +132,7 @@ export function ItemCreateForm() {
                 <h1>Форма создания товара</h1>
                 {showSuccessMessage ? <Message text={`Товар ${item.title} создан`}></Message> : null}
                 {showWarningMessage ? <Message text={`Неверно введены данные`}></Message> : null}
+                {existingFile ? <Message text={`Изображение с таким названием уже существует`}></Message> : null}
                 {titleWarningMessage ? <Message
                     text={`В название использован запрещённый символ _, $, %, #, @, &, *, ^`}></Message> : null}
 

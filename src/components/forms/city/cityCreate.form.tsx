@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {useDispatch} from "react-redux";
 import {useState} from "react";
 import {cityCreateAction} from "../../../store";
@@ -9,11 +9,18 @@ import {AcceptButton} from "../../buttons/access.button";
 import {CustomInput} from "../../inputs/custom.input";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css';
+import {useParams} from "react-router-dom";
+import {getUserByChatIdAction} from "../../../store/actionCreators/user/getUserByChatId.action";
+
+//@ts-ignore
+const tg: any = window.Telegram.WebApp;
 
 export function CityCreateForm() {
-
+    const params: any = useParams();
     const dispatch: any = useDispatch();
     const {city} = useTypedSelector(state => state.cities);
+    const {user} = useTypedSelector(state => state.users);
+
     const [title, setTitle] = useState("");
 
 
@@ -25,10 +32,15 @@ export function CityCreateForm() {
     }
 
     const clickHandler = async () => {
-        dispatch(cityCreateAction({title: title})).then(() => {
+        dispatch(cityCreateAction({
+                title: title,
+                userId: +user.id
+            }
+        )).then(() => {
             if (store.getState().cities.city.title) {
                 setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.close()
             } else {
                 setShowSuccessMessage(false);
                 setShowWarningMessage(true);
@@ -39,7 +51,9 @@ export function CityCreateForm() {
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault();
     }
-
+    useEffect(() => {
+        dispatch(getUserByChatIdAction(params.chatId.toString()))
+    }, []);
 
     return (
         <>
@@ -52,7 +66,7 @@ export function CityCreateForm() {
                     styles={classes.input}
                     type={'text'}
                     placeholder={'Название города'}
-                    name={''}
+                    name={'title'}
                     value={title}
                     changeHandler={changeHandler}></CustomInput>
                 <AcceptButton
