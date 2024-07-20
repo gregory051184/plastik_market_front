@@ -10,10 +10,11 @@ import classes from '../../../styles/forms/form.module.css'
 
 
 interface SubCat {
-    subCategories: any[]
+    subCategories: any[],
+    currentSubCategory: any
 }
 
-export function SubCategoryForCreationList({subCategories}: SubCat) {
+export function SubCategoryForCreationList({subCategories, currentSubCategory}: SubCat) {
     const dispatch: any = useDispatch();
     //const {subCategories} = useTypedSelector(state => state.subCategories);
     const {category} = useTypedSelector(state => state.categories);
@@ -39,21 +40,13 @@ export function SubCategoryForCreationList({subCategories}: SubCat) {
 
     return (
         <>
-            {/*<div>
-                {//@ts-ignore
-                    <Select
-                        options={subCategories}
-                        isSearchable={false}
-                        onChange={selectChangeHandler}
-                        placeholder={'Выберите подкатегорию'}
-                    />}
-            </div>*/}
             <select onChange={subCategoryChangeHandler} className={classes.select}>
-                <option>Выберите подкатегорию</option>
+                <option>{currentSubCategory.id > 0 ? currentSubCategory.title :'Выберите подкатегорию'}</option>
                 {
                     subCategories
                         .map((subCategory: any) =>
                             <CustomOption
+                                key={subCategory.id}
                                 placeholder={subCategory.title}
                                 value={subCategory.id}
                                 optionText={subCategory.title}></CustomOption>)

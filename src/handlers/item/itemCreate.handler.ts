@@ -17,7 +17,7 @@ export const itemCreateHandler = async (itemDto: ItemCreateInterface) => {
         fileForm.append('categoryId', itemDto.categoryId.toString())
         fileForm.append('price', itemDto.price.toString())
         fileForm.append('cityId', itemDto.cityId.toString())
-        const item = await axios.post('http://127.0.0.1:5001/api/items',
+        const item = await axios.post('http://127.0.0.1:5000/api/items',
             //{itemDto, fileForm},
             {...itemDto},
             {

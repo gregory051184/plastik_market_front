@@ -1,12 +1,12 @@
-import {ItemUpdateInterface} from "../../interfaces";
+
 import axios from "axios";
+import {ItemUpdateInterface} from "../../interfaces";
 
 export const itemUpdateHandler = async (itemUpdateDto: ItemUpdateInterface) => {
-    console.log(itemUpdateDto)
     try {
         const fileForm = new FormData();
         fileForm.append('file', itemUpdateDto.file)
-        const item = await axios.patch('http://127.0.0.1:5001/api/items',
+        const item = await axios.patch('http://127.0.0.1:5000/api/items',
             {...itemUpdateDto},
             {
                 headers: {

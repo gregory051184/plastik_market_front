@@ -11,9 +11,11 @@ import {CategoryForCreationList} from "../../lists/category/categoryForCreation.
 import {CustomCheckbox} from "../../inputs/custom.checkbox";
 import {CityForCreationList} from "../../lists/cities/cityForCreation.list";
 import {useParams} from "react-router-dom";
+
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css'
 import {checkFileHandler} from "../../../handlers";
+import {TextAreaInput} from "../../inputs/textArea.input";
 
 //@ts-ignore
 const tg: any = window.Telegram.WebApp;
@@ -25,7 +27,6 @@ export function ItemCreateForm() {
 
     const {category} = useTypedSelector(state => state.categories);
     const {subCategory} = useTypedSelector(state => state.subCategories);
-    const {item} = useTypedSelector(state => state.items);
     const {city} = useTypedSelector(state => state.cities);
 
     const [file, setFile] = useState<File | null>(null);
@@ -38,21 +39,27 @@ export function ItemCreateForm() {
     const [owner, setOwner] = useState(params.chatId.toString());
 
 
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [titleNotOk, setTitleNotOk] = useState(false);
+    const [descriptionNotOk, setDescriptionNotOk] = useState(false);
+    const [saleAndBuyNotOk, setSaleAndBuyNotOk] = useState(false);
+    const [priceNotOk, setPriceNotOk] = useState(false);
+    const [priceLengthNotOk, setPriceLengthNotOk] = useState(false);
+
     const [showWarningMessage, setShowWarningMessage] = useState(false);
     const [existingFile, setExistingFile] = useState(false);
 
     const [titleWarningMessage, setTitleWarningMessage] = useState(false);
 
-    const [sale, setSale] = useState(false);
-    const [buying, setBuying] = useState(false);
+    const changeTextAreaHandler = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setDescription(event.target.value);
+    }
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.name === 'image') {
             //@ts-ignore
-            setImage(event.target.files[0].name);
+            setImage(event.target?.files[0]?.name);
             //@ts-ignore
-            setFile(event.target.files[0])
+            setFile(event.target?.files[0])
         }
         if (event.target.name === 'title') {
             if (!!event.target.value.match(/[$#*_^%&@]/g)) {
@@ -72,21 +79,47 @@ export function ItemCreateForm() {
         // возможна ошибка
         if (event.target.name === 'forSale') {
             setForSale(!forSale)
-            setSale(!sale)
+            setForBuying(false)
 
         }
         if (event.target.name === 'forBuying') {
             setForBuying(!forBuying)
-            setBuying(!buying)
+            setForSale(false)
         }
     }
 
+    const randomizer = async (min: number, max: number): Promise<number> => {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+
     const clickHandler = async () => {
-        if (title && category && subCategory && city && price && description && (forSale || forBuying)) {
+        if (price.split(' ').length < 2) {
+            setPriceLengthNotOk(true);
+
+            setShowWarningMessage(false);
+            setPriceNotOk(false);
+            setTitleNotOk(false);
+            setDescriptionNotOk(false);
+            setSaleAndBuyNotOk(false);
+        }
+        if (city.id === 0 || category.id === 0 || subCategory.id === 0) {
+            setShowWarningMessage(true);
+
+            setPriceNotOk(false);
+            setTitleNotOk(false);
+            setDescriptionNotOk(false);
+            setSaleAndBuyNotOk(false);
+            setPriceLengthNotOk(false);
+        }
+
+        if (title && category.id > 0 && subCategory.id > 0 && city.id > 0 && price && description &&
+            (forSale || forBuying) && price.split(' ').length > 1) {
             if (await checkFileHandler(title, owner, image)) {
                 dispatch(itemCreateAction({
                     title: title,
-                    file: file,
+                    file: file ? file : null,
                     categoryId: category.id,
                     cityId: city.id,
                     owner: owner,
@@ -97,25 +130,69 @@ export function ItemCreateForm() {
                     subCategoryId: subCategory.id,
                     description: description,
                     price: +price.split(' ')[0],
-                    image: image
+                    image: image ? image : `${await randomizer(1, 10000000)}` + '.jpeg'
                 })).then(() => {
                     if (store.getState().items.item.title) {
-                        setShowSuccessMessage(true);
-                        setShowWarningMessage(false);
                         setExistingFile(false);
+                        tg.sendData(JSON.stringify({
+                            createdItem: {
+                                image: store.getState().items.item.image,
+                                title: store.getState().items.item.title,
+                                price: store.getState().items.item.price,
+                                chatId: params.chatId
+                            }
+                        }))
                         tg.close()
                     } else {
-                        setShowSuccessMessage(false);
-                        setShowWarningMessage(true);
                         setExistingFile(false);
                     }
+
+                    //}
                 })
             } else {
+
+
                 setExistingFile(true)
             }
+
         } else {
-            setShowWarningMessage(true);
-            setShowSuccessMessage(false);
+
+            if (!forSale && !forBuying) {
+                setSaleAndBuyNotOk(true);
+
+                setDescriptionNotOk(false);
+                setTitleNotOk(false);
+                setPriceNotOk(false);
+                setShowWarningMessage(false);
+                setPriceLengthNotOk(false);
+
+            } else if (!description) {
+                setDescriptionNotOk(true);
+
+                setSaleAndBuyNotOk(false);
+                setTitleNotOk(false);
+                setPriceNotOk(false);
+                setShowWarningMessage(false);
+                setPriceLengthNotOk(false);
+
+            } else if (!title) {
+                setTitleNotOk(true);
+
+                setDescriptionNotOk(false);
+                setSaleAndBuyNotOk(false);
+                setPriceNotOk(false);
+                setShowWarningMessage(false);
+                setPriceLengthNotOk(false);
+
+            } else if (!price) {
+                setPriceNotOk(true);
+
+                setTitleNotOk(false);
+                setDescriptionNotOk(false);
+                setSaleAndBuyNotOk(false);
+                setShowWarningMessage(false);
+                setPriceLengthNotOk(false);
+            }
         }
 
     }
@@ -127,17 +204,26 @@ export function ItemCreateForm() {
 
     return (
         <>
-
             <form onSubmit={submitHandler} className={classes.form}>
                 <h1>Форма создания товара</h1>
-                {showSuccessMessage ? <Message text={`Товар ${item.title} создан`}></Message> : null}
-                {showWarningMessage ? <Message text={`Неверно введены данные`}></Message> : null}
+                {showWarningMessage ? <Message
+                    text={`Вы не выбрали город/категорию/подкатегорию или не прикрепили фото товара`}></Message> : null}
                 {existingFile ? <Message text={`Изображение с таким названием уже существует`}></Message> : null}
                 {titleWarningMessage ? <Message
                     text={`В название использован запрещённый символ _, $, %, #, @, &, *, ^`}></Message> : null}
 
-                <CityForCreationList></CityForCreationList>
-                <CategoryForCreationList></CategoryForCreationList>
+                {titleNotOk ? <Message text={`Не введено название товара`}></Message> : null}
+                {descriptionNotOk ? <Message text={`Не введено описание товара`}></Message> : null}
+                {saleAndBuyNotOk ?
+                    <Message text={`Не отмечено товар для продажи или для покупки`}></Message> : null}
+                {priceNotOk ? <Message text={`Не введена цена`}></Message> : null}
+
+                {priceLengthNotOk ?
+                    <Message text={`Цена должна быть в формате "2000 руб/т" или "2000 руб`}></Message> : null}
+
+                <CityForCreationList currentCity={city}></CityForCreationList>
+                <CategoryForCreationList currentCategory={category}
+                                         currentSubCategory={subCategory}></CategoryForCreationList>
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
@@ -147,17 +233,17 @@ export function ItemCreateForm() {
                     changeHandler={changeHandler}></CustomInput>
                 <CustomCheckbox
                     styles={classes.checkbox}
-                    disabled={buying}
+                    //disabled={buying}
                     type={'checkbox'}
-                    text={'Для продажи'}
+                    text={'Хочу продать'}
                     checked={!forSale ? !!0 : !!1}
                     name={'forSale'}
                     changeHandler={changeHandler}></CustomCheckbox>
                 <CustomCheckbox
                     styles={classes.checkbox}
-                    disabled={sale}
+                    //disabled={sale}
                     type={'checkbox'}
-                    text={'Для покупки'}
+                    text={'Хочу купить'}
                     checked={!forBuying ? !!0 : !!1}
                     name={'forBuying'}
                     changeHandler={changeHandler}></CustomCheckbox>
@@ -168,13 +254,13 @@ export function ItemCreateForm() {
                     name={'price'}
                     value={price}
                     changeHandler={changeHandler}></CustomInput>
-                <CustomInput
+                <TextAreaInput
                     styles={classes.input}
-                    type={'text'}
-                    placeholder={'Описание'}
                     name={'description'}
                     value={description}
-                    changeHandler={changeHandler}></CustomInput>
+                    changeHandler={changeTextAreaHandler}
+                    placeholder={'Описание'}></TextAreaInput>
+                <label className={classes.p}>В поле "выбрать файл" поместите фото товара</label>
                 <CustomInput
                     styles={classes.input}
                     type={'file'}

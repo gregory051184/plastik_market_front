@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const subscribeCreateHandler = async (subscribeCreateInterface: SubscribeCreateInterface) => {
     try{
-        const subscribe = await axios.post('http://127.0.0.1:5001/api/subscribes',
+        const subscribe = await axios.post('http://127.0.0.1:5000/api/subscribes',
             {...subscribeCreateInterface},
             {
                 headers: {

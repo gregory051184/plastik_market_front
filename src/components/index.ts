@@ -19,6 +19,7 @@ export * from './forms/subCategory/subCategoryUpdate.form';
 export * from './inputs/custom.input';
 export * from './inputs/custom.checkbox';
 export * from './inputs/customDate.input';
+export * from './inputs/textArea.input';
 
 export * from './buttons/cancel.button';
 export * from './buttons/access.button';

@@ -3,12 +3,13 @@ import {useTypedSelector} from "../../../hooks/useTyped.selector";
 import {CustomInput} from "../../inputs/custom.input";
 import {AcceptButton} from "../../buttons/access.button";
 import React, {useEffect, useState} from "react";
-import {getUserByIdAction, userUpdateAction} from "../../../store";
+import {userUpdateAction} from "../../../store";
 import {useParams} from "react-router-dom";
 // @ts-ignore
 import classes from '../../../styles/forms/form.module.css';
 import {store} from "../../../store/store";
 import {Message} from "../../messages/message";
+import {getUserByChatIdAction} from "../../../store/actionCreators/user/getUserByChatId.action";
 
 //@ts-ignore
 const tg: any = window.Telegram.WebApp;
@@ -24,7 +25,6 @@ export function UserUpdateFrom() {
     const [contactPerson, setContactPerson] = useState(user.contactPerson);
     const [address, setAddress] = useState(user.address);
 
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [showWarningMessage, setShowWarningMessage] = useState(false);
 
 
@@ -33,7 +33,7 @@ export function UserUpdateFrom() {
     }
 
     useEffect(() => {
-        dispatch(getUserByIdAction(+params.id))
+        dispatch(getUserByChatIdAction(params.chatId))
     }, []);
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,59 +58,55 @@ export function UserUpdateFrom() {
     const clickHandler = () => {
         dispatch(userUpdateAction({
             id: +params.id,
-            contactPerson: contactPerson,
-            phone: phone,
-            email: email,
-            address: address
-        })).then(() => {
+            contactPerson: contactPerson ? contactPerson : user.contactPerson,
+            phone: phone ? phone : user.phone,
+            email: email ? email : user.email,
+            address: address ? address : user.address,
+        }, params.chatId)).then(() => {
             if (store.getState().users.user.id) {
-                setShowSuccessMessage(true);
                 setShowWarningMessage(false);
+                tg.sendData(JSON.stringify({updatedUser: {chatId: params.chatId}}))
                 tg.close()
             } else {
-                setShowSuccessMessage(false);
                 setShowWarningMessage(true);
             }
         })
     }
 
-    useEffect(() => {
+    /*useEffect(() => {
         dispatch(getUserByIdAction(+params.id))
-    }, []);
+    }, []);*/
 
     return (
         <>
-            {showSuccessMessage ?
-                <Message text={`Информация о пользователь ${user.firstName} изменена`}></Message> : null}
-            {showWarningMessage ? <Message text={`Неверно введены данные`}></Message> : null}
-
             <form onSubmit={submitHandler} className={classes.form}>
                 <h1 className={classes.subtitle}>Форма изменения профиля</h1>
+                {showWarningMessage ? <Message text={`Неверно введены данные`}></Message> : null}
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
-                    placeholder={'Контактное лицо'}
+                    placeholder={user.contactPerson ? user.contactPerson :'Контактное лицо'}
                     name={'contactPerson'}
                     changeHandler={changeHandler}
                     value={contactPerson}></CustomInput>
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
-                    placeholder={'Номер телефона'}
+                    placeholder={user.phone ? user.phone :'Номер телефона'}
                     name={'phone'}
                     changeHandler={changeHandler}
                     value={phone}></CustomInput>
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
-                    placeholder={'email'}
+                    placeholder={user.email ? user.email : 'email'}
                     name={'email'}
                     changeHandler={changeHandler}
                     value={email}></CustomInput>
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
-                    placeholder={'Адрес'}
+                    placeholder={user.address ? user.address : 'Адрес'}
                     name={'address'}
                     changeHandler={changeHandler}
                     value={address}></CustomInput>

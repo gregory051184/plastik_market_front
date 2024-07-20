@@ -6,7 +6,11 @@ import {getAllCitiesAction, getCityByIdAction} from "../../../store";
 import classes from '../../../styles/forms/form.module.css'
 import {CustomOption} from "../../selects/custom.option";
 
-export function CityForCreationList() {
+interface CityInterface {
+    currentCity: any
+}
+
+export function CityForCreationList({currentCity}: CityInterface) {
     const dispatch: any = useDispatch();
     const {cities, city} = useTypedSelector(state => state.cities);
 
@@ -27,10 +31,11 @@ export function CityForCreationList() {
     return (
         <>
             <select onChange={changeHandler} className={classes.select}>
-                <option>Выберите город</option>
+                <option>{currentCity.id > 0 ? currentCity.title : 'Выберите город'}</option>
 
                 {cities.map((city: any): any =>
                     <CustomOption
+                        key={city.id}
                         placeholder={city.title}
                         value={city.id}
                         optionText={city.title}></CustomOption>

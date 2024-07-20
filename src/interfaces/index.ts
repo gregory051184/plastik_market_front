@@ -29,3 +29,4 @@ export * from './components/button.interface';
 export * from './components/input.interface';
 export * from './components/message.interface';
 export * from './components/option.interface';
+export * from './components/textArea.interface';

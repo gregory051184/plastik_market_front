@@ -4,8 +4,8 @@ import {useState} from "react";
 import {
     getAllCategoriesAction,
     getAllCitiesAction,
-    getAllSubCategoriesAction, getCategoryByIdAction, getCityByIdAction,
-    getItemByIdAction, getSubCategoryByIdAction,
+    getAllSubCategoriesAction,
+    getItemByIdAction,
     itemUpdateAction
 } from "../../../store";
 import {store} from "../../../store/store";
@@ -28,10 +28,10 @@ export function ItemUpdateForm() {
     const params: any = useParams();
     const dispatch: any = useDispatch();
 
-    //const {categories, category} = useTypedSelector(state => state.categories);
-    //const {subCategories, subCategory} = useTypedSelector(state => state.subCategories);
+    const {category} = useTypedSelector(state => state.categories);
+    const {subCategory} = useTypedSelector(state => state.subCategories);
     const {item} = useTypedSelector(state => state.items);
-    //const {cities, city} = useTypedSelector(state => state.cities);
+    const {city} = useTypedSelector(state => state.cities);
 
     const [file, setFile] = useState<File | null>(null);
     const [title, setTitle] = useState(item.title);
@@ -41,19 +41,11 @@ export function ItemUpdateForm() {
     const [forSale, setForSale] = useState(item.forSale);
     const [forBuying, setForBuying] = useState(item.forBuying);
 
-    const [itemCity, setItemCity] = useState(item.city.id);
-    const [itemCategory, setItemCategory] = useState(item.category.id);
-    const [itemSubCategory, setItemSubCategory] = useState(item.subCategory.id);
+    const [priceLengthNotOk, setPriceLengthNotOk] = useState(false);
 
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [showWarningMessage, setShowWarningMessage] = useState(false);
 
     const [titleWarningMessage, setTitleWarningMessage] = useState(false);
-
-    const [sale, setSale] = useState(false);
-    const [buying, setBuying] = useState(false);
-
-    const [showSubCategoriesSelect, setShowSubCategoriesSelect] = useState(false);
 
     useEffect(() => {
         dispatch(getItemByIdAction(+params.id));
@@ -82,98 +74,55 @@ export function ItemUpdateForm() {
         }
 
         if (event.target.name === 'price') {
-            //const price = +event.target.value.split(' ')[0];
-            //const unit = event.target.value.split(' ')[1];
             setPrice(event.target.value)
         }
 
         if (event.target.name === 'description') {
             setDescription(event.target.value);
         }
-        // возможна ошибка
-        /*if (event.target.name === 'forSale') {
-            setForSale(!!event.target.name);
-        }
-        if (event.target.name === 'forBuying') {
-            setForBuying(!!event.target.name);
-        }*/
+
         if (event.target.name === 'forSale') {
             setForSale(!forSale)
-            setSale(!sale)
+            //setSale(!sale)
+            setForBuying(false)
 
         }
         if (event.target.name === 'forBuying') {
             setForBuying(!forBuying)
-            setBuying(!buying)
+            //setBuying(!buying)
+            setForSale(false)
         }
     }
 
-    const selectHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch(getCityByIdAction(+event.target.value)).then(() => {
-            setItemCity(store.getState().cities.city.id)
-        })
-
-    }
-
-    /*const categoryChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(getCategoryByIdAction(+event.target.name)).then(() => {
-            setItemCategory(store.getState().categories.category.id)
-        })
-
-    }*/
-
-    const categoryChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch(getCategoryByIdAction(+event.target.value)).then(() => {
-            setItemCategory(store.getState().categories.category.id)
-        }).then(() => {
-            if (store.getState().categories.category.title === 'Пластик') {
-                setShowSubCategoriesSelect(prev => !prev)
-            }
-            if (store.getState().categories.category.title !== 'Пластик') {
-                setShowSubCategoriesSelect(false)
-            }
-        })
-    }
-
-    /*const subCategoryChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(getSubCategoryByIdAction(+event.target.name)).then(() => {
-            setItemSubCategory(store.getState().subCategories.subCategory.id)
-        })
-
-    }*/
-
-    const subCategoryChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch(getSubCategoryByIdAction(+event.target.value)).then(() => {
-            setItemSubCategory(store.getState().subCategories.subCategory.id)
-        })
-
-    }
-
     const clickHandler = async () => {
-        dispatch(itemUpdateAction({
-            id: item.id,
-            title: title,
-            file: file,
-            category: itemCategory,
-            city: itemCity,
-            unitOfMeasurement: price.split(' ')[1],
-            forSale: forSale,
-            forBuying: forBuying,
-            subCategory: itemSubCategory,
-            description: description,
-            price: +price.split(' ')[0],
-            image: image,
-            owner: params.chatId
-        })).then(() => {
-            if (store.getState().items.item.title) {
-                setShowSuccessMessage(true);
-                setShowWarningMessage(false);
-                tg.close()
-            } else {
-                setShowSuccessMessage(false);
-                setShowWarningMessage(true);
-            }
-        })
+        if (price.split(' ').length < 2) {
+            setPriceLengthNotOk(true);
+        } else {
+            dispatch(itemUpdateAction({
+                id: item.id,
+                title: title ? title : item.title,
+                file: file ? file : null,
+                category: category.id > 0 ? category.id : item.category.id,//itemCategory ? +itemCategory : +item.category.id,
+                city: city.id > 0 ? city.id : +item.city.id,//itemCity ? +itemCity : +item.city.id,
+                unitOfMeasurement: price.split(' ')[1] ? price.split(' ')[1] : item.unitOfMeasurement,
+                forSale: forSale === false && forBuying === false ? item.forSale : forSale,
+                forBuying: forSale === false && forBuying === false ? item.forBuying : forBuying,
+                subCategory: subCategory.id > 0 ? subCategory.id : +item.subCategory.id,
+                description: description ? description : item.description,
+                price: +price.split(' ')[0] ? +price.split(' ')[1] : +item.price,
+                image: image ? image : item.image,
+                owner: params.chatId
+            })).then(() => {
+                if (store.getState().items.item.title) {
+                    //setShowSuccessMessage(true);
+                    setShowWarningMessage(false);
+                    tg.sendData(JSON.stringify({updatedItem: {chatId: params.chatId}}))
+                    tg.close()
+                } else {
+                    setShowWarningMessage(true);
+                }
+            })
+        }
     }
 
     const submitHandler = (event: React.FormEvent) => {
@@ -182,14 +131,21 @@ export function ItemUpdateForm() {
 
     return (
         <>
-            {showSuccessMessage ? <Message text={`Товар ${item.title} изменён`}></Message> : null}
-            {showWarningMessage ? <Message text={`Неверно введены данные`}></Message> : null}
 
-            {titleWarningMessage ? <Message
-                text={`В название использован запрещённый символ _, $, %, #, @, &, *, ^`}></Message> : null}
+
             <form onSubmit={submitHandler} className={classes.form}>
-                <CityForCreationList></CityForCreationList>
-                <CategoryForCreationList></CategoryForCreationList>
+
+                {showWarningMessage ? <Message text={`Неверно введены данные`}></Message> : null}
+
+                {titleWarningMessage ? <Message
+                    text={`В название использован запрещённый символ _, $, %, #, @, &, *, ^`}></Message> : null}
+
+                {priceLengthNotOk ?
+                    <Message text={`Цена должна быть в формате "2000 руб/т" или "2000 руб`}></Message> : null}
+
+                <CityForCreationList currentCity={item.city}></CityForCreationList>
+                <CategoryForCreationList currentCategory={item.category}
+                                         currentSubCategory={item.subCategory}></CategoryForCreationList>
                 <CustomInput
                     styles={classes.input}
                     type={'text'}
@@ -199,17 +155,15 @@ export function ItemUpdateForm() {
                     changeHandler={changeHandler}></CustomInput>
                 <CustomCheckbox
                     styles={classes.checkbox}
-                    disabled={buying}
                     type={'checkbox'}
-                    text={'Для продажи'}
+                    text={'Хочу продать'}
                     checked={!forSale ? !!0 : !!1}
                     name={'forSale'}
                     changeHandler={changeHandler}></CustomCheckbox>
                 <CustomCheckbox
                     styles={classes.checkbox}
-                    disabled={sale}
                     type={'checkbox'}
-                    text={'Для покупки'}
+                    text={'Хочу купить'}
                     checked={!forBuying ? !!0 : !!1}
                     name={'forBuying'}
                     changeHandler={changeHandler}></CustomCheckbox>
@@ -228,7 +182,7 @@ export function ItemUpdateForm() {
                     value={description}
                     changeHandler={changeHandler}></CustomInput>
 
-                <label className={classes.subtitle}>В поле "выбрать файл" поместите фото товара</label>
+                <label className={classes.p}>В поле "выбрать файл" поместите фото товара</label>
                 <CustomInput
                     styles={classes.input}
                     type={'file'}

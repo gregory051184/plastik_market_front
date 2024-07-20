@@ -4,10 +4,10 @@ import {ItemsActionTypesInterfaces} from "../../../interfaces/reduxInterfaces/it
 import {itemsFilterHandler} from "../../../handlers";
 import {ItemActionTypes} from "../../actionsTypes";
 
-export const itemFilterAction = (itemFilterInterface: ItemsFilterInterface) => {
+export const itemFilterAction = (itemFilterInterface: ItemsFilterInterface, chatId: string) => {
     return async (dispatch: Dispatch<ItemsActionTypesInterfaces>) => {
         try {
-            const items = await itemsFilterHandler(itemFilterInterface);
+            const items = await itemsFilterHandler(itemFilterInterface, chatId);
             if (items) {
                 dispatch({type: ItemActionTypes.FILTER_ITEM, items: items})
             }

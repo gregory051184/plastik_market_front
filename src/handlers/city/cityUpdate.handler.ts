@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const cityUpdateHandler = async (cityUpdateInterface: CityUpdateInterface, chatId: string) => {
     try{
-        const city = await axios.patch(`http://127.0.0.1:5001/api/cities/${chatId}`,
+        const city = await axios.patch(`http://127.0.0.1:5000/api/cities/${chatId}`,
             {...cityUpdateInterface},
             {
                 headers: {

@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const cityCreateHandler = async (cityCreateInterface: CityCreateInterface) => {
     try{
-        const city = await axios.post('http://127.0.0.1:5001/api/cities',
+        const city = await axios.post('http://127.0.0.1:5000/api/cities',
             {...cityCreateInterface},
             {
                 headers: {

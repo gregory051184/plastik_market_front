@@ -22,7 +22,7 @@ function App() {
     return (
         <div>
             <Routes>
-                <Route path={AllUrls.USER_UPDATE_FORM + '/:id'} element={<UserUpdateFrom></UserUpdateFrom>}></Route>
+                <Route path={AllUrls.USER_UPDATE_FORM + '/:id' + '/:chatId'} element={<UserUpdateFrom></UserUpdateFrom>}></Route>
 
                 <Route path={AllUrls.ADVERTISEMENT_CREATE_FORM + '/:chatId'}
                        element={<AdvertisementCreateForm></AdvertisementCreateForm>}></Route>
@@ -48,7 +48,7 @@ function App() {
                 <Route path={AllUrls.SUBSCRIBE_UPDATE_FORM + '/:id' + '/:chatId'}
                        element={<SubscribeUpdateForm></SubscribeUpdateForm>}></Route>
 
-                <Route path={AllUrls.FILTER_ITEMS} element={<ItemsFilter></ItemsFilter>}></Route>
+                <Route path={AllUrls.FILTER_ITEMS + '/:chatId'} element={<ItemsFilter></ItemsFilter>}></Route>
                 <Route path={AllUrls.ITEM_CREATE_FORM + '/:chatId'} element={<ItemCreateForm></ItemCreateForm>}></Route>
                 <Route path={AllUrls.ITEM_UPDATE_FORM + '/:id' + '/:chatId'} element={<ItemUpdateForm></ItemUpdateForm>}></Route>
 
